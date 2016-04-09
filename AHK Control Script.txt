@@ -1,0 +1,347 @@
+
+; #If !isMouseShown() and WinActive("Darkfall Online")
+#If WinActive("Darkfall Online")
+; USE CTRL+NUM to change hotbars
+; ALT (!), CTRL (^) and SHIFT (+)
+; Bind the following keys
+; ] = unsheath object
+
+healCount := 0
+cCount := 0
+xbCount := 0
+vCount := 0
+fCount := 0
+
+num_rays = 6
+k_1 = ^{Numpad5} ;Impale
+k_2 = ^{Numpad6} ;Dragons Breath
+k_3 = ^{Numpad7} ;Unholy Caress
+k_4 = ^{Numpad8} ;Frostbite
+k_5 = !^i ;Lightning Bolt
+k_6 = !^o ;Insect Swarm
+
+;Tweak cooldowns here
+cd_1 = 6500 ;Impale
+cd_2 = 13000 ;Dragons Breath
+cd_3 = 13500 ;Unholy Caress
+cd_4 = 8000 ;Frostbite
+cd_5 = 8000 ;Lightning Bolt
+cd_6 = 12000 ;Insect Swarm
+
+p_1 = 1 ;Impale
+p_2 = 2 ;Dragons Breath
+p_3 = 3 ;Unholy Caress
+p_4 = 4 ;Frosbite
+p_5 = 5 ;Lighting Bolt
+p_6 = 6 ;Insect Swarm
+
+While A_Index <= num_rays
+{
+r_%A_Index% = 1
+}
+
+;~*Alt::NumPadDiv
+
+~*wheelup:: ;Staff
+ Send !{Numpad3}
+ Send !{Numpad3}
+ Send !3
+ Sleep 100
+ Send ]
+return
+
+~*wheeldown:: ;2H Sword & Bar1
+ Send !{Numpad4}
+ Send !{Numpad4}
+ Send !1
+ Sleep 100
+ Send ]
+return
+
+*MButton:: ;bow on click middle
+ Send !{Numpad5}
+ Send !{Numpad5}
+ Send !1
+ Sleep 100
+ Send ]
+return
+
+!MButton:: ; s&b on alt click middle
+ Send !{Numpad6}
+ Sleep 600
+ Send !{Numpad7}
+ Sleep 100
+ Send ]
+ Send !1
+return
+
++!MButton:: ; s&b on alt click middle
+ Send !{Numpad6}
+ Sleep 600
+ Send !{Numpad7}
+ Sleep 100
+ Send ]
+ Send !1
+return
+
+;health to mana
+!XButton2::
+ fCount = 0
+ vCount = 0
+ Send !{Numpad9} 
+ Sleep, 75
+ Click
+return
+
+;health to mana
++!XButton2::
+ fCount = 0
+ vCount = 0
+ Send !{Numpad9} 
+ Sleep, 75
+ Click
+return
+
+;mana to stam
+*XButton2::
+ fCount = 0
+ vCount = 0
+ Send !{Numpad8} 
+ Sleep, 75
+ Click
+return
+
+; heal self cycle?
+*XButton1::
+ fCount = 0
+ vCount = 0
+ if (xbCount > 2) {
+ xbCount = 0
+ }
+ if (xbCount == 0) {
+ Send ^{Numpad1}
+ }
+ if (xbCount == 1) {
+ Send ^{Numpad2}
+ }
+ if (xbCount == 2) {
+ Send ^{Numpad3} 
+ }
+ Sleep, 50
+ Click
+ xbCount := xbCount + 1
+return
+
+*e::
+ fCount = 0
+ vCount = 0
+ Send !{Numpad1} ; Lean Right
+ Send ^{Numpad4} ; Whirlwind
+
+ cur_ray := RayLogic(cur_ray, cur_key, cur_cool)
+ Send , %cur_key%
+ While (ErrorLevel = 1)
+ {
+ If (GetKeyState("e", "P") = 1)
+ Return
+ KeyWait, Lbutton, T.2
+ }
+ r_%cur_ray% = 0
+ neg_cur_cool := -cur_cool
+ SetTimer , %cur_ray% , %neg_cur_cool%
+return
+
+*q::
+ fCount = 0
+ vCount = 0
+ Send !{Numpad2} ; Lean Left
+ Send ^{Numpad9} ; Power Attack
+ if (healCount > 1) {
+ healCount = 0
+ }
+ if (healCount == 0) {
+ Send !^{Numpad1}
+ }
+ if (healCount == 1) {
+ Send !^{Numpad2}
+ }
+ healCount := healCount + 1
+return
+
+*c::
+ fCount = 0
+ vCount = 0
+ Send !^{Numpad3} ;Rage
+ Send !^{Numpad4} ;Confusion
+return
+
+*v::
+ fCount = 0
+ Send !^{Numpad5} ;Disabling Blow GS
+ Send !^{Numpad6} ;Disabling Shot
+ if (vCount > 2) {
+ vCount = 0
+ }
+ if (vCount == 0) {
+ Send !^{Numpad7} ;Begone
+ Sleep 50
+ }
+ if (vCount == 1) {
+ Send !^{Numpad8} ;Shrapnel
+ Sleep 50
+ }
+ if (vCount == 2) {
+ Send !^{Numpad9} ;Stormblast
+ Sleep 50
+ }
+ vCount := vCount + 1
+return
+
+~*f::
+ vCount = 0
+ if (fCount > 1) {
+ fCount = 0
+ }
+ if (fCount == 0) {
+ Send ^{NumpadSub} ;Slashing Weakness
+ }
+ if (fCount == 1) {
+ Send ^{NumpadAdd} ;Guiding Wind
+ }
+ fCount := fCount + 1
+return
+
+^g::
+ send ^g
+ sleep 62000
+ soundbeep
+ soundbeep
+ soundbeep
+ soundbeep
+ soundbeep
+return
+
+
+^h::
+ send ^h
+ sleep 62000
+ soundbeep
+ soundbeep
+ soundbeep
+ soundbeep
+ soundbeep
+return
+
+; F1 = 2H, HB1
+*$F1::
+Send !{Numpad4}
+Send !1
+Sleep 125
+Send ]
+return
+
+; F2 = S&B, HB1
+*$F2::
+Send !{Numpad6}
+Sleep 600
+Send !{Numpad7}
+Sleep 125
+Send ]
+return
+
+; F3 = Staff
+*$F3::
+Send !{Numpad3}
+Send !3
+Sleep 125
+Send ]
+return
+
+; F4 = Staff
+*$F4::
+Send !{Numpad3}
+Send !4
+Sleep 125
+Send ]
+return
+
+; F5
+*$F5::
+Send !{Numpad3}
+Send !5
+Sleep 125
+Send ]
+return
+
+; F6
+*$F6::
+Send !{Numpad3}
+Send !6
+Sleep 125
+Send ]
+return
+
+; F7
+*$F7::
+Send !{Numpad3}
+Send !7
+Sleep 125
+Send ]
+return
+
+; F8
+*$F8::
+Send !{Numpad3}
+Send !8
+Sleep 125
+Send ]
+return
+
+; F9
+*$F9::
+Send !{Numpad3}
+Send !9
+Sleep 125
+Send ]
+return
+
+F10:: ;Set Dropoff Spot
+ MouseGetPos, DropX, DropY
+return
+
+^!LButton:: ;Loot
+ MouseGetPos, OldX, OldY
+ MouseClickDrag, L, OldX, OldY, DropX, DropY, 0
+ MouseMove, OldX, OldY, 0
+return
+
+
+;Subroutine group to reset ray cds
+1:
+2:
+3:
+4:
+5:
+6:
+r_%A_ThisLabel% = 1
+Return
+
+RayLogic(cur_ray, ByRef cur_key, ByRef cur_cool)
+{
+ global
+ cur_ray := p_1
+ While A_Index <= num_rays {
+ ray_number := p_%A_Index%
+ if (r_%ray_number% = 1) {
+ cur_ray := ray_number
+ Break
+ }
+ }
+
+ ;Sets the ray's corresponding key and cooldown
+ cur_key := k_%cur_ray%
+ cur_cool := cd_%cur_ray%
+ Return cur_ray
+}
+
+*Pause::Suspend
