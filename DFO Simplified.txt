@@ -1,15 +1,26 @@
-; script only runs when Darkfall is open
+; ******************* script only runs when Darkfall is open *******************
 #If WinActive("Darkfall Online")
+; *********************************************************
 
 
-; Toggle Script on Off
-f12:: ; On off switch for Script on F12 key
-Pause
-Suspend
-return
 
 
-; Sword and Board on Single Click
+; ******************* Toggle Script on Off *******************
+*Pause::Suspend
+; *********************************************************
+
+
+
+
+; ******************* Ray Setup *******************
+
+; *********************************************************
+
+
+
+
+
+; ******************* Sword and Board on Single Click *******************
 !~*wheeldown:: ; s&b on alt scroll wheel down
  Send !{Numpad6} ; sword bind
  Sleep 600
@@ -17,41 +28,76 @@ return
  Sleep 100
  Send +1  ; return to Hotbar 1
 return
+; *********************************************************
 
 
-; Staff and Magic Hotbar
+
+
+; ******************* Staff and Magic Hotbar *******************
 !~*wheelup:: ; staff on alt scroll wheel up
  Send !{Numpad5} ; staff bind
  Sleep 100
  Send +2  ; return to Hotbar 2
 return
+; *********************************************************
 
 
-; 2Hander and Melee Hotbar
+
+
+; ******************* 2Hander and Main Hotbar *******************
 +~*wheelup:: ; 2hander on shift scroll wheel up
- Send !{Numpad5} ; staff bind
+ Send !{Numpad8} ; 2Hander bind
  Sleep 100
- Send +1  ; return to Hotbar 2
+ Send +1  ; return to Hotbar 1
 return
+; *********************************************************
 
 
-; Mount Lean, spells, and Melee on your Q/E Keys
+
+
+; ******************* Bow and Main Hotbar *******************
++~*wheeldown:: ; Bow on shift scroll wheel down
+ Send !{Numpad9} ; Bow bind
+ Sleep 100
+ Send +1  ; return to Hotbar 1
+return
+; *********************************************************
+
+
+
+
+; ******************* Mount Lean, spells, and Melee on your Q/E Keys *******************
 *e::
- Send !{Numpad1} ; Lean Right
- Send ^{Numpad4} ; Whirlwind
+ Send !{Numpad4} ; Alt + Numpad#4
+ Send ^{Numpad4} ; CTRL + Numpad#4
+return
  
- *q::
- Send !{Numpad1} ; Lean Left
- Send ^{Numpad4} ; Knock Back
+*q::
+ Send !{Numpad3} ; Alt + Numpad#3
+ Send ^{Numpad2} ; CTRL + Numpad#2
+return
+; *********************************************************
+
+
+
+
+; ******************* 2 different skills on ` key *******************
+`::
+ Send ^{Numpad1} ; CTRL + Numpad#1
+ Send ^{Numpad0} ; CTRL + Numpad#0
+return
+; *********************************************************
+
 
  
- ; SPRINT TOGGLE
- [::
+ 
+; ******************* SPRINT TOGGLE *******************
+[::
  Loop
     {
         If A_Index = 1
             Sleep, 500
-        GetKeyState, State, NumpadAdd, P
+        GetKeyState, State, [, P
         If State = D
             Break
         Send {] Down}
@@ -59,4 +105,28 @@ return
 Send {] Up}
 Sleep, 500
 Return
- 
+; *********************************************************
+
+
+
+
+; ******************* Auto Cast Transfers *******************
+*Xbutton1::
+ Send ^{Numpad9} ; stam to health
+ sleep 10
+ Click
+return
+
+*Xbutton2::
+ Send ^{Numpad8} ; Manm to Stam
+ sleep 10
+ Click
+return
+
+*Mbutton::
+ Send ^{Numpad7} ; health to Mana
+ sleep 10
+ Click
+return
+; ***********************************************************
+
