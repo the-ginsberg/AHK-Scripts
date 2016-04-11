@@ -1,0 +1,2528 @@
+#IfWinActive,Darkfall Online
+
+#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+#MaxHotkeysPerInterval 1000
+
+#Include C:\Users\bal\Documents\tts.ahk
+
+Thread, interrupt, 0  ; Make all threads always-interruptible.
+
+SoundSet, 100
+
+
+Voice := TTS_CreateVoice("Microsoft Anna")
+TTS(Voice, "SetRate",2)
+TTS(Voice, "SetVolume",100)
+
+soundpath := "\macrosounds\"
+
+
+switchcool := 0
+switchcoolAmount := 2000
+responseCount = 10
+pivot90 := 0
+robot := 0
+roboted := 0
+
+cat = 0
+cattxt0 = "Errors"
+cattxt1 = "Taunts"
+cattxt2 = "Help"
+cattxt3 = "Input"
+cattxt4 = "Technical"
+cattxt5 = "Parser"
+
+skippedray := 0
+skipray1 := 0
+skipray2 := 0
+skipray3 := 0
+skipray4 := 0
+skipray5 := 0
+skipray6 := 0
+
+build := 6
+autoruncool := 0
+rearview := 0
+debuffctrl := 0
+wofcool := 0
+r90s := 0
+r50Cycle := 0
+wepCycle := 0
+
+autoClick := 0
+debuffCycle := 0
+
+spikesout := 0
+staffout := 1
+staffinuse := 0
+stafftype := 0
+xstaffout := 1
+shieldout := 0
+
+stafftoshield := 0
+
+aboutto90 := 0
+90oncooldown := 0
+
+whirlwindcooldown := 0
+abouttowhirlwind := 0
+
+Buffing := 0
+
+potcool := 0
+
+cycle := 0
+cycle2 := 0
+cycle3 := 0
+cycle4 := 0
+cycle5 := 0
+cycle6 := 0
+cycle7 := 0
+cycle8 := 0
+cycle9 := 0
+cycle10 := 0
+cycle11 := 0
+cycle12 := 0
+
+r1=0
+r2=0
+r3=0
+r4=0
+r5=0
+r6=0
+r7=0
+justrayed=0
+
+activeBar := 8
+activeSlot := 1
+wheelDowned := 0
+
+buffType := 0
+buffCycler := 0
+
+dcDelayTime := 250
+longDelayTime := 200
+
+superActionTime := 0
+superActionDoubleClicked := 0
+superActionLongTime := 0
+
+kdlBuffButton := 0
+
+doubleClickActionTime := 0
+doubleClickActionTime1 := 0
+doubleClickActionTime2 := 0
+doubleClickActionTime3 := 0
+doubleClickActionTime4 := 0
+doubleClickActionTime5 := 0
+doubleClickActionTime6 := 0
+doubleClickActionTime7 := 0
+doubleClickActionTime8 := 0
+doubleClickActionTime9 := 0
+doubleClickActionTime10 := 0
+doubleClickActionTime30 := 0
+doubleClickActionTime100 := 0
+doubleClickActionTime300 := 0
+sdClickActionTime := 0
+
+autopowerwhirl = 0
+buffCycle = 0
+
+StickAndMove = 0
+
+keyDownLength := 0
+keyDownLength2 := 0
+keyDownLength4 := 0
+keyDownLength5 := 0
+keyDownLength6 := 0
+keyDownLength8 := 0
+keyDownLength9 := 0
+keyDownLength10 := 0
+keyDownLength15 := 0
+keyDownLength16 := 0
+keyDownLength20 := 0
+keyDownLength3 := 0
+keyDownLength1023 := 0
+keyDownLength1024 := 0
+keyDownLength999 := 0
+keyDownLengthStaff = 0
+
+SetNumlockState AlwaysOff
+
+; FUNCTIONS
+
+_SINGLETAP = 1
+_DOUBLETAP = 2
+_LONGPRESS = 3
+
+;; ---------- FUNCTIONS ---------------------------------------
+;; ------------------------------------------------------------
+
+~A up::
+;SAPI := ComObjCreate("SAPI.SpVoice")
+;SAPI.rate := 1
+;SAPI.speak("Peter Piper picked a peck of pickled peppers")
+
+return
+
+GetKeyPressType(lengthpressed, doubletap)
+{
+	global
+	
+	if a_tickCount - lengthpressed > longDelayTime
+	{
+		return _LONGPRESS
+	} else
+	If (a_tickCount-doubletap < dcDelayTime)
+	{
+		return _DOUBLETAP
+	} else {
+		return _SINGLETAP
+	}
+}
+
+SelectBarSlotReturn(bar, slot, returnbar)
+{
+
+	;SendInput {Shift Down}
+	SendInput +{%bar%}
+	;SendInput {Shift Up}
+	SendInput {%slot%}
+	
+	if (bar != returnbar)
+	{
+		;SendInput {Shift Down}
+		SendInput +{%returnbar%}
+		;SendInput {Shift Up}
+	}
+}
+
+
+SelectBarSlot(bar, slot)
+{
+	SendInput +{%bar%}
+	SendInput {%slot%}
+}
+
+PlaySound(soundname)
+{
+	SoundPlay, %soundpath%%soundname%
+}
+
+isMouseShown()
+{
+	StructSize := A_PtrSize + 16
+	VarSetCapacity(InfoStruct, StructSize)
+	NumPut(StructSize, InfoStruct)
+	DllCall("GetCursorInfo", UInt, &InfoStruct)
+	Result := NumGet(InfoStruct, 8)
+
+	if Result
+		return 1
+	else
+		return 0
+} 
+
+;; ---------- BEFORE AUTO-TOGGLE ------------------------------
+;; ------------------------------------------------------------
+
+F2:: 
+	;Send /invite %clipboard%{Enter} 
+	Send /invite ^v{Enter} 
+return
+
+; Gui
+~Pause Up::
+		Send {Shift Down}
+		Send {1}
+		Send {Shift Up}
+		Sleep 50
+		SendInput {Esc}
+		;Sleep 20
+		;SendInput {LButton}
+		Sleep 50
+		SendInput {BACKSPACE}
+		Sleep 30
+		SendInput {F12 up}
+		Sleep 75
+		SendInput {F12 down}		;continue to sprint	
+return
+
+;; ---------- UNIVERSAL LOOT ON KEY PRESS/HOLD ----------------
+
+~NumLock::
+   {	
+      MouseGetPos, xpos, ypos
+      SendInput {LButton Down}
+	  if (xpos > 1500)
+	  {
+		MouseMove, 894, 758, 0
+	  } else {
+		MouseMove, 1656, 759, 0
+	  }
+      SendInput {LButton Up}
+      MouseMove, %xpos%, %ypos%, 0
+      MouseMove, %xpos%, %ypos%, 0
+	  Sleep, 100
+   }
+return
+
+RobotChat:
+	cat++
+	
+	if (cat = 6)
+	{
+		cat = 0
+	}
+	
+	TTS(Voice, "Speak", cattxt%cat%)
+return
+
++Up::
+	TTS(Voice, "Speak", "Remove Border")
+	WinSet, Style, -0xC00000, A
+return
+
++Down::
+	TTS(Voice, "Speak", "Show Border")
+	WinSet, Style, +0xC00000, A
+return
+
+Esc::
+	if (roboted = 0)
+	{
+		TTS(Voice, "Speak", robotxt%robot%)
+		SetTimer, RobotChat, 500
+		roboted = 1
+	}
+return
+
+Esc Up::
+	roboted = 0
+	
+	SetTimer, RobotChat, Off
+	If (!isMouseShown())
+	{
+		SetTimer, RobotChat, Off
+		return
+	}
+	
+	Random, rand, 10000, 100000
+	if (cat = 5)
+	{
+		Send :: I did not understand '%clipboard%'.  Please try again.{ENTER}
+		return
+	}
+	if (cat = 0)
+	{
+		Random, pick, 0, 4
+		if (pick = 0)
+		{
+			Send :: Does not compute. (Error Code {#}%rand%){ENTER}
+			return
+		}
+		if (pick = 1)
+		{
+			Send :: Syntax error on line %rand%{ENTER}
+			return
+		}
+		if (pick = 2)
+		{
+			Send :: Unhandled exception at 0x%rand%{ENTER}
+			return
+		}
+		if (pick = 3)
+		{
+			Send :: Generic I/O Error (0x%rand%){ENTER}
+			return
+		}
+		if (pick = 4)
+		{
+			Send :: I did not understand '%clipboard%'.  Please try again.{ENTER}
+			return
+		}
+	}
+	if (cat = 1)
+	{
+		Random, pick, 0, 4
+		if (pick = 0)
+		{
+			Send :: Resistance is futile.{ENTER}
+			return
+		}
+		if (pick = 1)
+		{
+			Send :: Fear is perfectly normal for carbon based lifeforms.{ENTER}
+			return
+		}
+		if (pick = 2)
+		{
+			Send :: You have been Assimilated. ({#}%rand%){ENTER}
+			return
+		}
+		if (pick = 3)
+		{
+			Send :: You will be dead soon.{ENTER}
+			return
+		}
+		if (pick = 4)
+		{
+			Send :: ALL YOUR BASE BELONG TO US{ENTER}
+			return
+		}
+	}
+	if (cat = 2)
+	{
+		Random, pick, 0, 2
+		if (pick = 0)
+		{
+			Send :: Request for backup processed, assistance will arrive shortly.{ENTER}
+			return
+		}
+		if (pick = 1)
+		{
+			Send :: Initiating lightshow sequence, please stand by.{ENTER}
+			return
+		}
+		if (pick = 2)
+		{
+			Send :: The mothership is in orbit, please stand by.{ENTER}
+			return
+		}
+	}
+	if (cat = 3)
+	{
+		Random, pick, 0, 3
+		if (pick = 0)
+		{
+			Send :: Your request is being processed, please stand by.{ENTER}
+			return
+		}
+		if (pick = 1)
+		{
+			Send :: Your request could not be completed at this time.  Please try again later.{ENTER}
+			return
+		}
+		if (pick = 2)
+		{
+			Send :: Your request will be handled in approximately %rand% minutes.{ENTER}
+			return
+		}
+		if (pick = 3)
+		{
+			Send :: 'Zerg' was not found in my database, please contact the systems administrator.{ENTER}
+			return
+		}
+	}
+	if (cat = 4)
+	{
+		Random, pick, 0, 3
+		if (pick = 0)
+		{
+			Send :: 010001110101001101001111001000000101001101000011010100100101010101000010{ENTER}
+		}
+		if (pick = 1)
+		{
+			Send :: iALFAR.System.Core, Version=1.2.0.7, Service Pack 1{ENTER}
+		}
+		if (pick = 2)
+		{
+			Send :: Updates available, reboot required.  Shutting down.{ENTER}
+		}
+		if (pick = 3)
+		{
+			Send :: Entering Sleep Mode.{ENTER}
+		}
+	}
+
+return
+
+#If !isMouseShown() and WinActive("Darkfall Online") 
+
+;; ---------- AFTER AUTO-TOGGLE ------------------------------
+;; ------------------------------------------------------------
+
+PotCooldown:
+ 	SetTimer, PotCooldown, Off 
+	TTS(Voice, "Speak", "Potion Ready")
+	potcool = 0
+return 
+
+pulloutRayStaff()
+{
+	global
+		spikesout = 0
+		if (shieldout = 1)
+		{
+			Send {E Up}
+			Sleep, 60
+			shieldout = 0
+		}
+		SelectBarSlotReturn(6,0,0)
+		if (staffout = 0)
+		{
+			;return
+			TTS(Voice, "Speak", "Staff")
+			Sleep, 250
+			staffout = 1
+			stafftype = 1
+		}
+		if ((staffout = 1) & (stafftype = 0))
+		{
+			TTS(Voice, "Speak", "Staff")
+			Sleep, 150
+			staffout = 1
+			stafftype = 1
+		}
+}
+
+pulloutStaff()
+{
+	global
+		spikesout = 0
+		if (shieldout = 1)
+		{
+			Send {E Up}
+			Sleep, 60
+			shieldout = 0
+		}
+		if (staffinuse = 0)
+		{
+			SelectBarSlotReturn(1,2,0)
+		} else if (staffinuse = 1) {
+			SelectBarSlotReturn(9,0,0)
+		}
+		if (staffout = 0)
+		{
+			;return
+			TTS(Voice, "Speak", "Staff")
+			Sleep, 300
+			staffout = 1
+			stafftype = 0
+		}
+		if ((staffout = 1) & (stafftype = 1))
+		{
+			TTS(Voice, "Speak", "Staff")
+			Sleep, 300
+			staffout = 1
+			stafftype = 0
+		}		
+}
+
+pulloutXferStaff()
+{
+	global
+		spikesout = 0
+		if (shieldout = 1)
+		{
+			Send {E Up}
+			Sleep, 60
+			shieldout = 0
+		}
+		SelectBarSlotReturn(1,2,0)
+		if (xstaffout = 0)
+		{
+			TTS(Voice, "Speak", "Staff")
+			Sleep, 250
+			xstaffout = 1
+			staffout = 0
+		}
+}
+
+~^1 Up::
+	pulloutStaff()
+	SelectBarSlotReturn(3,1,0)
+	Sleep, 60
+	Send {LButton}
+	Send {LCtrl Up}
+return
+
+~^2 Up::
+	pulloutStaff()
+	SelectBarSlotReturn(3,2,0)
+	Sleep, 60
+	Send {LButton}
+	Send {LCtrl Up}
+return
+
+~^3 Up::
+	pulloutStaff()
+	SelectBarSlotReturn(3,3,0)
+	Sleep, 60
+	Send {LButton}
+	Send {LCtrl Up}
+return
+
+~^4 Up::
+	pulloutStaff()
+	SelectBarSlotReturn(3,4,0)
+	Sleep, 60
+	Send {LButton}
+	Send {LCtrl Up}
+return
+
+~^5 Up::
+	pulloutStaff()
+	SelectBarSlotReturn(3,5,0)
+	Sleep, 60
+	Send {LButton}
+	Send {LCtrl Up}
+return
+
+EatFood:
+	SelectBarSlotReturn(1,6,0)
+	SetTimer, EatFood, Off
+return
+
+~Delete::
+	if (keyDownLength1023 = 0)
+	{
+		keyDownLength1023 := a_tickCount
+		SetTimer, EatFood, %longDelayTime%
+	}
+return
+
+~Delete Up::
+	SetTimer, EatFood, Off
+	state := GetKeyPressType(keyDownLength1023, doubleClickActionTime)
+	if (state = _SINGLETAP)
+	{
+		SelectBarSlotReturn(5,9,0) 
+	}
+	if (state = _DOUBLETAP)
+	{
+			if (potcool == 0)
+			{
+				TTS(Voice, "Speak", "Pop Clear Mind")
+				SelectBarSlotReturn(1,0,0)
+				SetTimer, PotCooldown, 60000
+				potcool = 1
+			} else {
+				TTS(Voice, "Speak", "Potion Cooling")
+			}
+	}
+	if (state = _LONGPRESS) 
+	{
+		
+	}
+	doubleClickActionTime := a_tickCount
+	keyDownLength1023 = 0
+return
+
+~Insert::
+	;if toggle = 0  {SelectBarSlotReturn(8,6,0)} else {SelectBarSlotReturn(8,6,0)}
+	if (keyDownLength10 = 0)
+	{
+		keyDownLength10 := a_tickCount
+	}
+return
+
+~Insert Up::
+
+	state := GetKeyPressType(keyDownLength10, doubleClickActionTime)
+	if (state = _SINGLETAP)
+	{
+	}
+	if (state = _DOUBLETAP)
+	{
+			if (potcool == 0)
+			{
+				TTS(Voice, "Speak", "Pop Mana")
+				SelectBarSlotReturn(1,7,0)
+				SetTimer, PotCooldown, 60000
+				potcool = 1
+			} else {
+				TTS(Voice, "Speak", "Potion Cooling")
+			}
+	}
+		;SelectBarSlotReturn(3,8,0) 
+	if (state = _LONGPRESS) 
+		SelectBarSlotReturn(6,1,0) 
+	doubleClickActionTime := a_tickCount
+	keyDownLength10 = 0
+return
+
+SpawnMount:
+	SelectBarSlotReturn(1,1,0)
+	SetTimer, SpawnMount, Off
+return
+
+~PgUp::
+	;if toggle = 0  {SelectBarSlotReturn(8,6,0)} else {SelectBarSlotReturn(8,6,0)}
+	if (keyDownLength1024 = 0)
+	{
+		keyDownLength1024 := a_tickCount
+		SetTimer, SpawnMount, %longDelayTime%
+	}
+return
+
+~PgUp Up::
+	SetTimer, SpawnMount, Off
+	
+	state := GetKeyPressType(keyDownLength1024, doubleClickActionTime)
+	if (state = _SINGLETAP)
+	{
+		SelectBarSlotReturn(5,3,0)
+	}
+	if (state = _DOUBLETAP)
+	{
+			if (potcool == 0)
+			{
+				TTS(Voice, "Speak", "Pop Health")
+				SelectBarSlotReturn(1,9,0)
+				SetTimer, PotCooldown, 60000
+				potcool = 1
+			} else {
+				TTS(Voice, "Speak", "Potion Cooling")
+			}
+	}
+	if (state = _LONGPRESS) 
+	{
+		
+	}
+	doubleClickActionTime := a_tickCount
+	keyDownLength1024 = 0
+return
+; Buff / Other
+
+~NumpadDiv::
+	if (kdlBuffButton = 0)
+	{
+		kdlBuffButton := a_tickCount
+	}
+return
+
+~NumpadDiv Up::
+	state := GetKeyPressType(kdlBuffButton, doubleClickActionTime)
+
+	if (state = _LONGPRESS) 
+	{
+		if (activeBar = 2) 
+		{
+			SelectBarSlotReturn(activeBar,activeSlot,activeBar)
+			Sleep, 100
+			SendInput {LButton}
+			Sleep, 1500
+			SelectBarSlotReturn(activeBar,activeSlot+1,activeBar)
+			Sleep, 100
+			SendInput {LButton}
+			Sleep, 1500
+			SelectBarSlotReturn(activeBar,activeSlot+2,activeBar)
+			Sleep, 100
+			SendInput {LButton}
+			Sleep, 1500
+			SelectBarSlotReturn(activeBar,activeSlot+3,activeBar)
+			Sleep, 100
+			SendInput {LButton}
+			Sleep, 1500
+			SelectBarSlotReturn(activeBar,activeSlot+4,activeBar)
+			Sleep, 100
+			SendInput {LButton}
+		} else {
+			SelectBarSlotReturn(activeBar,activeSlot,activeBar)
+			Sleep, 100
+			SendInput {LButton}
+			if (stopall = 1)
+			{
+				Buffing = 0
+				TTS(Voice, "Speak", "Aborting")
+				return
+			}
+			Sleep, 2000
+			SelectBarSlotReturn(activeBar,activeSlot+1,activeBar)
+			Sleep, 100
+			SendInput {LButton}
+			if (stopall = 1)
+			{
+				Buffing = 0
+				TTS(Voice, "Speak", "Aborting")
+				return
+			}
+			Sleep, 2000
+			SelectBarSlotReturn(activeBar,activeSlot+2,activeBar)
+			Sleep, 100
+			SendInput {LButton}
+			if (stopall = 1)
+			{
+				Buffing = 0
+				TTS(Voice, "Speak", "Aborting")
+				return
+			}
+			Sleep, 2500
+			SelectBarSlotReturn(activeBar,activeSlot+3,activeBar)
+			Sleep, 100
+			if (stopall = 1)
+			{
+				Buffing = 0
+				TTS(Voice, "Speak", "Aborting")
+				return
+			}
+			SendInput {LButton}
+			Sleep, 2000
+			SelectBarSlotReturn(activeBar,activeSlot+4,activeBar)
+			Sleep, 100
+			if (stopall = 1)
+			{
+				Buffing = 0
+				TTS(Voice, "Speak", "Aborting")
+				return
+			}
+			SendInput {LButton}
+			Sleep, 2000
+			SelectBarSlotReturn(activeBar,activeSlot+5,activeBar)
+			Sleep, 100
+			if (stopall = 1)
+			{
+				Buffing = 0
+				TTS(Voice, "Speak", "Aborting")
+				return
+			}
+			SendInput {LButton}
+			Sleep, 5000
+			SelectBarSlotReturn(activeBar,activeSlot+6,activeBar)
+			Sleep, 100
+			if (stopall = 1)
+			{
+				Buffing = 0
+				TTS(Voice, "Speak", "Aborting")
+				return
+			}
+			SendInput {LButton}
+			Sleep, 2500
+			SelectBarSlotReturn(activeBar,activeSlot+7,activeBar)
+			Sleep, 100
+			if (stopall = 1)
+			{
+				Buffing = 0
+				TTS(Voice, "Speak", "Aborting")
+				return
+			}
+			SendInput {LButton}
+			Sleep, 2500
+			SelectBarSlotReturn(activeBar,activeSlot+8,activeBar)
+			Sleep, 100
+			if (stopall = 1)
+			{
+				Buffing = 0
+				TTS(Voice, "Speak", "Aborting")
+				return
+			}
+			SendInput {LButton}
+			Sleep, 2500
+			SelectBarSlotReturn(activeBar,activeSlot+9,activeBar)
+			Sleep, 100
+			if (stopall = 1)
+			{
+				Buffing = 0
+				TTS(Voice, "Speak", "Aborting")
+				return
+			}
+			SendInput {LButton}
+			Sleep, 2500
+			if (stopall = 1)
+			{
+				Buffing = 0
+				TTS(Voice, "Speak", "Aborting")
+				return
+			}
+			SelectBarSlotReturn(activeBar,activeSlot-1,activeBar)
+			Sleep, 100
+			SendInput {LButton}
+		}
+	} else {
+		if (Buffing = 1)
+		{
+			Buffing = 0
+			return
+		}
+
+		if (activeBar = 5) 
+		{
+			activeBar := 8
+			activeSlot := 1
+			TTS(Voice, "Speak", "Buff 1")
+;			SoundPlay, C:\Users\brad\Documents\macrosounds\s_buffself.wav
+			;SelectBarSlotReturn(4,1,0)
+			;Sleep, 200
+			
+		} else
+		if (activeBar = 8)
+		{
+			activeBar := 2
+			activeSlot := 1
+			TTS(Voice, "Speak", "Buff 2")
+		} else {
+			activeBar := 5
+			activeSlot := 0
+			TTS(Voice, "Speak", "Buff 3")
+;			SoundPlay, C:\Users\brad\Documents\macrosounds\s_buffother.wav
+			;SelectBarSlotReturn(4,1,0)
+			;Sleep, 200
+		}
+		SelectBarSlotReturn(activeBar,activeSlot,activeBar)
+	}
+	doubleClickActionTime := a_tickCount
+	kdlBuffButton = 0
+
+return
+
+AutoClick:
+	if (autopowerwhirl = 0)
+	{
+		;SendInput {Tab}
+		;Sleep, 50
+	
+		; CAP HOUSE
+		;SelectBarSlotReturn(4,1,4)
+		;Sleep,1
+		;Send, 1
+		
+		; DEFAULT AUTO CLICK
+		;SelectBarSlotReturn(5,3,4)
+		;Sleep, 10
+		;SendInput {LButton Down}
+		;Sleep, 25
+		;SendInput {LButton Up}
+		;SelectBarSlotReturn(7,6,4)
+		;Sleep, 10
+		SendInput {LButton Down}
+		Sleep, 25
+		SendInput {LButton Up}
+	
+	}
+return
+
+Macroz:
+	TTS(Voice, "Speak", "Start Macro Loop")
+	Loop 1 {
+		SelectBarSlotReturn(2,1,2)
+		Sleep, 50
+		Send {LButton}
+		Sleep, 2000
+		SelectBarSlotReturn(2,2,2)
+		Sleep, 50
+		Send {LButton}
+		Sleep, 2000
+		SelectBarSlotReturn(2,3,2)
+		Sleep, 50
+		Send {LButton}
+		Sleep, 2000
+		SelectBarSlotReturn(2,4,2)
+		Sleep, 50
+		Send {LButton}
+		Sleep, 2000
+		SelectBarSlotReturn(2,5,2)
+		Sleep, 50
+		Send {LButton}
+		Sleep, 2000
+	}
+	SelectBarSlotReturn(3,4,2)
+	Sleep, 50
+	Send {LButton}
+	Sleep, 2000
+return
+
+WhirlWindCool:
+	SetTimer, WhirlWindCool, Off
+	whirlwindcooldown := 0
+	abouttowhirlwind := 0
+	TTS(Voice, "Speak", "Whirlwind")
+	;SoundPlay, C:\Users\brad\Documents\macrosounds\s_whirlwind.wav
+return
+
+WhirlWindCool2:
+	SetTimer, WhirlWindCool2, Off
+	whirlwindcooldown2 := 0
+	;SoundPlay, C:\Users\brad\Documents\macrosounds\s_whirlwind.wav
+return
+
+~MButton::
+	if (keyDownLength = 0)
+	{
+	keyDownLength := a_tickCount
+	}
+return
+
+; Auto Click
+~MButton Up::
+	if a_tickCount - keyDownLength > longDelayTime
+	{
+		SelectBarSlotReturn(6,0,0)	
+		Sleep, 250
+		;SendInput {NumpadDel}
+		
+	} else {
+		if (autoClick = 0)
+		{
+			TTS(Voice, "Speak", "Click On")
+			;SoundPlay, C:\Users\brad\Documents\macrosounds\s_clickon.wav
+			SelectBarSlotReturn(4,1,0)
+			Sleep, 100
+			; disable
+			SelectBarSlotReturn(9,3,0)
+			
+			;Sleep, 100
+			;SendInput {LButton}
+			SetTimer, AutoClick, 55
+			;SetTimer, Macroz, 14000
+			autoClick = 1
+			;Goto, Macroz
+		} else {
+			TTS(Voice, "Speak", "Click Off")
+			;SoundPlay, C:\Users\brad\Documents\macrosounds\s_clickoff.wav
+			SetTimer, AutoClick, Off
+			;SetTimer, Macroz, Off
+			autoClick = 0
+		}
+	}
+	keyDownLength := 0
+return
+
+; Switch buff bars
+~XButton1::
+	if (keyDownLength = 0)
+	{
+	keyDownLength := a_tickCount
+	}
+
+	;if ((stafftoshield + 400) > a_tickCount)
+	;{
+	;	TTS(Voice, "Speak", "Delay")
+	;	Sleep, ((stafftoshield + 400) - stafftoshield)
+	;}
+
+	if (shieldout = 0)
+	{
+		phk = %A_PriorHotkey%
+		if ((phk = "~NumpadHome Up") || (phk = "~NumpadPgUp Up"))
+		{
+			sc3 = %A_TimeSincePriorHotkey%
+			if (sc3 < 550)
+			{
+				Sleep 550-sc3
+			}
+		}
+		if (phk = "~LButton Up")
+		{
+			sc3 = %A_TimeSincePriorHotkey%
+			if (sc3 < 900)
+			{
+				Sleep 900-sc3
+			}
+		}	
+		TTS(Voice, "Speak", "Shield")
+		SelectBarSlotReturn(1,3,0)
+		Sleep, 250
+		SendInput {E Down}
+		Sleep, 300
+		SelectBarSlotReturn(1,4,0)
+		shieldout=1
+		staffout=0
+		spikesout=0
+	} else {
+		SendInput {E Down}
+	}
+return
+
+~XButton1 Up::
+	SendInput {E Up}
+	
+	;GetKeyState, state, E
+		
+	;if state = D
+	;{
+	;	SendInput {E Up}
+	;	staffout = 0
+	;} else {
+	;;	staffout = 0
+	;	if a_tickCount - keyDownLength > longDelayTime
+		;{
+		; disabling shot
+			;
+			;if (activeBar = 2) 
+			;{
+		;		activeBar := 8
+		;		activeSlot := 1
+		;		SoundPlay, C:\Users\brad\Documents\macrosounds\s_buffself.wav
+		;	} else {
+		;		activeBar := 2
+		;		activeSlot := 2
+		;		SoundPlay, C:\Users\brad\Documents\macrosounds\s_buffother.wav
+		;	}
+		;	SendInput {Shift Down}
+		;	SendInput {%activeBar%}
+		;	SendInput {Shift Up}
+		;	SendInput {%activeSlot%}
+;			activeSlot++
+	;	} else {
+		
+		;;	if (shieldout = 0)
+	;		{
+		;		SelectBarSlotReturn(1,3,0)
+		;		Sleep, 250
+		;		SendInput {E Down}
+		;		Sleep, 300
+		;		SelectBarSlotReturn(1,4,0)
+		;	} else {
+		;		SendInput {E Down}
+		;	}
+		;	shieldout = 1
+		;}
+	;}
+  	doubleClickActionTime8 := a_tickCount
+	keyDownLength := 0
+return
+
+~NumpadMult::
+
+		shieldout = 0
+		staffout = 0
+
+		if (spikesout == 0)
+		{
+			SelectBarSlotReturn(6,6,0)
+			Sleep, 250
+		}
+		DllCall("mouse_event", uint, 1, int, 0, int, 2500)
+		;MouseMove,0,200,2,R
+		spikesout = 1
+		SendInput {LButton}
+		Sleep, 450
+		DllCall("mouse_event", uint, 1, int, 0, int, -2350)
+		SendInput {Numpad5 down}
+		Sleep, 75
+		SendInput {Numpad5 up}
+		TTS(Voice, "Speak", "Battlespike")
+		
+		;Sleep, 450
+		;Goto NumpadPgUpUp
+		
+return
+
+~C Up::
+	;GetKeyState, state, LButton 
+	;if state = D
+	;{
+		SoundPlay, C:\Users\brad\Documents\macrosounds\tpirhorns.wav
+	;}
+
+return
+
+SpawnBH:
+		SelectBarSlotReturn(6,8,0)
+		SetTimer, SpawnBH, Off
+return
+
+; switch to buff self and buff other bars, auto cast first spell
+~Home::
+	if (keyDownLength9 = 0)
+	{
+	keyDownLength9 := a_tickCount
+	SetTimer, SpawnBH, %longDelayTime%
+	}
+return
+~Home Up::
+	SetTimer, SpawnBH, Off
+	if a_tickCount - keyDownLength9 > longDelayTime
+	{
+	
+	} else {
+		If (a_tickCount-doubleClickActionTime30 < dcDelayTime)
+		{
+			if (potcool == 0)
+			{
+				TTS(Voice, "Speak", "Pop Supress")
+				SelectBarSlotReturn(1,8,0)
+				SetTimer, PotCooldown, 60000
+				potcool = 1
+			} else {
+				TTS(Voice, "Speak", "Potion Cooling")
+			}
+			
+			;SelectBarSlotReturn(3,9,0)
+		} else {
+		}
+	}
+	doubleClickActionTime30 := a_tickCount
+	keyDownLength9 := 0
+return
+
+OpenBank:
+	Send {Tab}
+	SetTimer, OpenBank, Off
+return
+
+~NumpadAdd::
+	if (keyDownLength999 = 0)
+	{
+	keyDownLength999 := a_tickCount
+	SetTimer, OpenBank, %longDelayTime%
+	}
+return
+
+; Sac and Heal Other
+~NumpadAdd Up::
+	SetTimer, OpenBank, Off
+	if a_tickCount - keyDownLength999 > longDelayTime
+	{
+	} else {
+		If (a_tickCount-doubleClickActionTime300 < dcDelayTime)
+		{
+			Send {Tab}
+			;Send {Tab}
+		} else {
+			pulloutStaff()
+			
+			if (cycle7 = 2) {
+			cycle7 = 0
+			}
+
+			if (cycle7 = 1) {
+				
+				SelectBarSlotReturn(3,6,0)
+				;Sleep, 60
+				;Send, {LButton Down}
+				;Keywait, LButton, L
+				;Send, {LButton up}
+				cycle7 = 2
+			}
+
+			if (cycle7 = 0) {
+				
+				SelectBarSlotReturn(3,7,0)
+				;Sleep, 60
+				;Send, {LButton Down}
+				;Keywait, LButton, L
+				;Send, {LButton up}
+				cycle7 = 1
+			}
+		}
+	}
+	
+	doubleClickActionTime300 := a_tickCount
+	keyDownLength999 := 0
+return
+
+~Up::
+	if (keyDownLength6 = 0)
+	{
+	keyDownLength6 := a_tickCount
+	}
+return
+; Build Switcher
+~Up Up::
+
+	if a_tickCount - keyDownLength6 > longDelayTime
+	{
+		keyDownLength6 := 0
+		TTS(Voice, "Speak", "Pee v Pee")
+		;SoundPlay, C:\Users\brad\Documents\macrosounds\s_holy.wav
+		SelectBarSlotReturn(4,4,0)
+		build := 6
+		return
+	} else {
+		keyDownLength6 := 0	
+		if (staffout = 0)
+		{
+			GetKeyState, state, E
+			if state = D 
+			{
+				if (shieldout = 1)
+				{
+				TTS(Voice, "Speak", "Drop Block")
+				SendInput {E Up}
+				}
+			}
+			Sleep, 100 ; make up for pressing too soon
+			SelectBarSlotReturn(9,8,0)
+			SelectBarSlotReturn(5,1,0)
+			SelectBarSlotReturn(6,5,0)
+			Sleep, 50
+			SendInput {LButton}
+		} else {
+			if (build == 6)
+			{
+				TTS(Voice, "Speak", "Holy")
+				;SoundPlay, C:\Users\brad\Documents\macrosounds\s_holy.wav
+				SelectBarSlotReturn(4,2,0)
+				build := 0
+				return
+			} 
+			if (build == 5)
+			{
+				TTS(Voice, "Speak", "Pee v Pee")
+				;SoundPlay, C:\Users\brad\Documents\macrosounds\s_witchcraft.wav
+				SelectBarSlotReturn(4,4,0)
+				build := 6
+				return
+			} 
+			if (build == 4)
+			{
+				TTS(Voice, "Speak", "Water")
+				;SoundPlay, C:\Users\brad\Documents\macrosounds\s_water.wav
+				SelectBarSlotReturn(2,0,0)
+				build := 5
+				return
+			} 
+			if (build == 3)
+			{
+				TTS(Voice, "Speak", "Air")
+				;SoundPlay, C:\Users\brad\Documents\macrosounds\s_air.wav
+				SelectBarSlotReturn(6,7,0)
+				build := 4
+				return
+			} 
+			if (build == 2)
+			{
+				TTS(Voice, "Speak", "Acid")
+				;SoundPlay, C:\Users\brad\Documents\macrosounds\s_acid.wav
+				SelectBarSlotReturn(0,4,0)
+				build := 3
+				return
+			} 
+			if (build == 1)
+			{
+				TTS(Voice, "Speak", "Fire")
+				;SoundPlay, C:\Users\brad\Documents\macrosounds\s_fire.wav
+				SelectBarSlotReturn(2,9,0)
+				build := 2
+				return
+			} 
+			if (build == 0)
+			{
+				TTS(Voice, "Speak", "Unholy")
+				;SoundPlay, C:\Users\brad\Documents\macrosounds\s_unholy.wav
+				SelectBarSlotReturn(6,5,0)
+				build := 1
+				return
+			}
+		}
+	}
+
+return
+
+~End::
+	if (keyDownLength8 = 0)
+	{
+	keyDownLength8 := a_tickCount
+	}
+return
+
+; Tox and Death Fog
+~End Up::
+	if a_tickCount - keyDownLength8 > longDelayTime
+	{
+		
+		SelectBarSlotReturn(8,6,0)	
+	} else {
+		If (a_tickCount-doubleClickActionTime2 < dcDelayTime)
+		{
+			SelectBarSlotReturn(0,2,0)
+		} else {
+			
+			SelectBarSlotReturn(0,1,0)
+		}
+	}
+	doubleClickActionTime2 := a_tickCount
+	keyDownLength8 := 0
+return	
+
+ResetWepCycle:
+	wepCycle = 0
+	SetTimer, ResetWepCycle, Off
+return	
+
+NumpadPgUpDown:
+	phk = %A_PriorHotkey%
+	sc = %A_TimeSincePriorHotkey%
+return
+
+NumpadPgUpUp:
+
+	GetKeyState, state, E
+	staffout = 0
+	xstaffout=0
+	shieldout = 0
+	spikesout = 0	
+	
+	if state = D
+	{
+		SendInput {E Up}
+		Sleep, 50
+	}
+	
+	;;SoundPlay, C:\Users\brad\Documents\macrosounds\s_axe.wav
+		
+	;GPF_SetSingleLine(0,960,540,"Melee",0xFF000000,0,20,1,0)
+	;GPF_ShowSingleLine(0,0)
+
+; Shows the SingleLine Text Field number 0 (the first one)
+	if (phk = "~RButton Up")
+	{
+		if (sc < 1000)
+		{
+			TTS(Voice, "Speak", "After Ray")
+			Sleep 1000-sc
+		}
+	}
+	if (phk = "~NumpadHome Up")
+	{
+		if (sc < 550)
+		{
+			TTS(Voice, "Speak", "Switch")
+			Sleep 550-sc
+		}
+	}
+	if (whirlwindcooldown2 = 1)
+	{
+	if (wepCycle=2) {
+		wepCycle = 0
+	}
+	
+	if (wepCycle=1) {
+		SelectBarSlotReturn(1,5,0)
+		wepCycle = 2
+		;TTS(Voice, "Speak", "1st May lay")
+	}
+	if (wepCycle=0) {
+		SelectBarSlotReturn(9,6,0)
+		wepCycle = 1
+		;TTS(Voice, "Speak", "2nd May lay")
+	}
+	} else{
+		SelectBarSlotReturn(1,5,0)
+		wepCycle = 2
+		;TTS(Voice, "Speak", "1st may lay")
+	}
+	;Sleep, 100
+return
+
+
+~NumpadPgUp::
+	Goto NumpadPgUpDown
+return
+
+~NumpadPgUp Up::
+	Goto NumpadPgUpUp
+return
+
+			; Whirlwind and Magma and Lend Mana
+~Right::
+	if (keyDownLength5 = 0)
+	{
+	keyDownLength5 := a_tickCount
+	}
+return
+
+		
+
+~Right Up::
+	if a_tickCount - keyDownLength5 > longDelayTime
+	{
+		SelectBarSlotReturn(6,3,0)
+	} else {
+		If (a_tickCount-doubleClickActionTime10 < dcDelayTime)
+		{
+			;TTS(Voice, "Speak", "Unholy Flames")
+			;SoundPlay, C:\Users\brad\Documents\macrosounds\s_inferno.wav
+			SelectBarSlotReturn(3,9,0)
+			;staffout = 1
+			;shieldout = 0
+			;spikesout = 0
+		} else {
+			if (staffout = 0)
+			{
+				GetKeyState, state, E
+				if state = D 
+				{
+					if (shieldout = 1)
+					{
+					TTS(Voice, "Speak", "Drop Block")
+					SendInput {E Up}
+					}
+				}
+			
+				Sleep, 200
+				abouttowhirlwind := 1
+				SelectBarSlotReturn(9,5,0)
+				SelectBarSlotReturn(0,0,0)
+				SelectBarSlotReturn(3,8,0)
+				Sleep, 60
+				SendInput {LButton}
+				if (shieldout = 1)
+				{
+					whirlwindcooldown := 1
+					SetTimer, WhirlWindCool, 4750
+				} else {
+					whirlwindcooldown := 1
+					whirlwindcooldown2 := 1
+					SetTimer, WhirlWindCool, 5750
+				}
+				SetTimer, WhirlWindCool2, 11500
+				doubleClickActionTime10 := a_tickCount
+				keyDownLength5 := 0
+				return
+			}
+			
+			SelectBarSlotReturn(0,4,0)
+		}
+	}
+	doubleClickActionTime10 := a_tickCount
+	keyDownLength5 := 0
+return
+
+; Begone and Shrapnel and Range slow
+ResetR90Cycle:
+	cycle12 = 0
+	SetTimer, ResetR90Cycle, Off
+return
+
+
+~NumpadRight::
+	if (keyDownLength2 = 0)
+	{
+	keyDownLength2 := a_tickCount
+	}
+return
+~NumpadRight Up::
+	if a_tickCount - keyDownLength2 > longDelayTime
+	{
+		shieldout = 0
+		spikesout = 0
+		SelectBarSlotReturn(9,7,0) 
+		Sleep, 300
+		SelectBarSlotReturn(9,3,0)
+		Sleep, 100
+		SendInput {LButton}	
+	;	SendInput {Shift Up}
+	} else {
+			if (cycle12 = 2) {
+			cycle12 = 0
+			}
+
+			if (cycle12 = 1) {
+			
+			SelectBarSlotReturn(5,7,0)
+			cycle12 = 2
+			}
+
+			if (cycle12 = 0) {
+			
+			SelectBarSlotReturn(5,8,0)
+			;SetTimer, ResetR90Cycle, 15000
+			cycle12 = 1
+			}
+			
+		If (a_tickCount-doubleClickActionTime10 < dcDelayTime)
+		{
+
+		} else {
+
+		}
+	}
+	doubleClickActionTime10 := a_tickCount
+	keyDownLength2 := 0
+return
+
+AutoRunCool:
+	SetTimer, AutoRunCool, Off
+	autoruncool := 0
+return
+
+~NumpadUp::
+	if (keyDownLength20 = 0)
+	{
+	keyDownLength20 := a_tickCount
+	}
+return
+
+~NumpadUp Up::
+	if a_tickCount - keyDownLength20 > longDelayTime
+	{
+	} else 
+	If (a_tickCount-doubleClickActionTime3 < dcDelayTime)
+	{
+		if (autoruncool = 0)
+		{
+			SendInput {/}
+			SetTimer, AutoRunCool, 500
+			autoruncool = 1
+		}
+		SendInput {F12 up}
+		Sleep 60
+		SendInput {F12 down}		;continue to sprint
+		;SendInput {/ Down}
+;		Sleep 60
+	} else {
+	}
+	doubleClickActionTime3 := a_tickCount
+	keyDownLength20 := 0
+return
+
+SwitchTimer:
+		if ((a_tickCount - keyDownLength20) > 200)
+		{
+			DllCall("mouse_event", uint, 1, int, -2000, int, 0)
+			pivot90 := 1
+			SetTimer, SwitchTimer, Off
+		}
+		
+
+;		if (debuffCycle = 3)
+;		{
+;			debuffCycle = 0
+;		}
+;		if (debuffCycle = 2)
+;		{
+;			SelectBarSlotReturn(6,8,0)
+;			debuffCycle = 3
+;			;SoundPlay, C:\Users\brad\Documents\macrosounds\s_piercing.wav
+;		}
+;		if (debuffCycle = 1)
+;		{
+;			SelectBarSlotReturn(9,0,0)
+;			debuffCycle = 2
+;			;SoundPlay, C:\Users\brad\Documents\macrosounds\s_piercing.wav
+;		}
+;		if (debuffCycle = 0)
+;		{
+;			SelectBarSlotReturn(3,8,0)
+;			debuffCycle = 1
+;			;SoundPlay, C:\Users\brad\Documents\macrosounds\s_slashing.wav
+;		}
+return
+
+; Bubble & Come hither / Long press Melee Slow
+~NumpadLeft::
+	if (keyDownLength16 = 0)
+	{
+		keyDownLength16 := a_tickCount
+		;SetTimer, SwitchTimer, %longDelayTime%
+	}
+return
+
+ResetWOF:
+	wofcool = 0
+	SetTimer, ResetWOF, Off
+	TTS(Voice, "Speak", "Waahf 3")
+	;SoundPlay, C:\Users\brad\Documents\macrosounds\s_piercing.wav
+return
+
+~NumpadLeft Up::
+	if (pivot90 == 1)
+	{
+			DllCall("mouse_event", uint, 1, int, 2000, int, 0)
+			pivot90 = 0;
+	}
+	if a_tickCount - keyDownLength16 > longDelayTime
+	{
+		SelectBarSlotReturn(7,6,0)
+	} else
+	If (a_tickCount-doubleClickActionTime3 < dcDelayTime)
+	{
+		;
+		SelectBarSlotReturn(7,7,0)
+	} else {
+		;
+;		if wofcool = 2
+;		{
+;			SelectBarSlotReturn(4,8,0)
+;			wofcool = 0
+;		} else
+;		if wofcool = 1
+;		{
+;			SelectBarSlotReturn(5,2,0)
+;			wofcool = 2
+;		} else
+		SelectBarSlotReturn(5,6,0)
+		if wofcool = 0
+		{
+			wofcool = 1
+			SetTimer, ResetWOF, 30000
+		}
+		
+	}
+	
+	doubleClickActionTime3 := a_tickCount
+	keyDownLength16 := 0
+return
+
+~Left::
+	if (keyDownLength3 = 0)
+	{
+	keyDownLength3 := a_tickCount
+	}
+
+;	if ((staffout = 0) && (rearview = 0))
+;	{
+;			DllCall("mouse_event", uint, 1, int, -3900, int, 0)
+;			rearview = 1
+;	}	
+return
+
+~Left Up::
+		if (staffout = 0)
+		{
+			;SelectBarSlotReturn(7,3,0) 
+			;SelectBarSlotReturn(9,9,0)
+			;Sleep,100
+			SendInput {Numpad5 down}
+			Sleep, 75
+			SendInput {Numpad5 up}
+			
+			DllCall("mouse_event", uint, 1, int, 3825, int, 0) ; 180
+			
+			SendInput {Numpad8 Up} ; stop running forward
+			SendInput {Numpad2 Down} ; walk backwards
+			
+			Sleep, 500
+			SendInput {Numpad5 down}
+			Sleep, 75
+			SendInput {Numpad5 up}
+			
+			SendInput {E Down}
+			Sleep, 1050
+			SendInput {E Up}
+			Sleep, 100
+			
+			Loop 5 {
+			TTS(Voice, "Speak", "JUMP")
+			SendInput {Numpad5 down}
+			Sleep, 75
+			SendInput {Numpad5 up}
+
+			Sleep, 100
+			SendInput {E Down}
+			Sleep, 750
+			SendInput {E Up}
+			Sleep, 100
+			}
+			
+			SendInput {Numpad2 Up}
+			keyDownLength3 := 0
+			return
+		}
+
+	if (a_tickCount - keyDownLength3 > longDelayTime)
+	{
+		SelectBarSlotReturn(6,7,0)
+		;SendInput {Numpad5 down}
+		;Sleep, 75
+		;SendInput {Numpad5 up}
+		;DllCall("mouse_event", uint, 1, int, -3825, int, 0)
+		;SendInput {LButton}
+		;SelectBarSlotReturn(9,2,0)
+	} else
+	If (a_tickCount-doubleClickActionTime3 < dcDelayTime)
+	{
+		SelectBarSlotReturn(0,6,0)
+	} else {
+
+		SelectBarSlotReturn(0,3,0)
+		SetTimer,EyeRotCoolDownTimer, 25000
+	}
+	doubleClickActionTime3 := a_tickCount
+	keyDownLength3 := 0
+		
+	
+return
+
+EyeRotCoolDownTimer:
+	SetTimer, EyeRotCoolDownTimer, Off
+	TTS(Voice, "Speak", "Eye Rot 3")
+	;SoundPlay, C:\Users\brad\Documents\macrosounds\s_eyerot.mp3
+return
+
+ConfusionCoolDownTimer:
+	SetTimer, ConfusionCoolDownTimer, Off
+	TTS(Voice, "Speak", "Blind")
+	;SoundPlay, C:\Users\brad\Documents\macrosounds\s_blind.mp3
+return
+
+StormblastCoolDownTimer:
+	SetTimer, StormblastCoolDownTimer, Off
+	TTS(Voice, "Speak", "Stormblast")
+	;SoundPlay, C:\Users\brad\Documents\macrosounds\s_stormblast.mp3
+return
+
+Ray1Cool:
+	SetTimer, Ray1Cool, Off
+	TTS(Voice, "Speak", "Pungent")
+	r1=0
+return
+Ray2Cool:
+	SetTimer, Ray2Cool, Off
+	TTS(Voice, "Speak", "Impale")
+	r2=0
+return
+Ray3Cool:
+	SetTimer, Ray3Cool, Off
+	TTS(Voice, "Speak", "Cold")
+	r3=0
+return
+Ray4Cool:
+	SetTimer, Ray4Cool, Off
+	TTS(Voice, "Speak", "Unholy")
+	r4=0
+return
+Ray5Cool:
+	SetTimer, Ray5Cool, Off
+	TTS(Voice, "Speak", "Fire")
+	r5=0
+return
+Ray6Cool:
+	SetTimer, Ray6Cool, Off
+	TTS(Voice, "Speak", "Insect")
+	r6=0
+return
+Ray7Cool:
+	SetTimer, Ray7Cool, Off
+	r7=0
+return
+
+RayCool:
+	TTS(Voice, "Speak", "Ray")
+	SetTimer, RayCool, Off
+	justrayed=0
+return
+
+RayAdvance:
+	skippedray = 1
+	if (r1 = 0)
+	{
+		TTS(Voice, "Speak", "Next")
+		r1 = 1
+		skipray1 = 1
+;		SetTimer, Ray1Cool, 16000
+		return
+	}
+	if (r2 = 0)
+	{
+		TTS(Voice, "Speak", "Next")
+		r2 = 1
+		skipray2 = 1
+;		SetTimer, Ray2Cool, 6000
+		return
+	}
+	if (r3 = 0)
+	{
+		TTS(Voice, "Speak", "Next")
+		r3 = 1
+		skipray3 = 1
+;		SetTimer, Ray3Cool, 9000
+		return
+	}
+	if (r4 = 0)
+	{
+		TTS(Voice, "Speak", "Next")
+		r4 = 1
+		skipray4 = 1
+;		SetTimer, Ray4Cool, 14000
+		return
+	}
+	if (r5 = 0)
+	{
+		TTS(Voice, "Speak", "Next")
+		skipray5 = 1
+		r5 = 1
+;		SetTimer, Ray5Cool, 14000
+		return
+	}
+	if (r6 = 0)
+	{
+		TTS(Voice, "Speak", "Next")
+		skipray6 = 1
+		r6 = 1
+;		SetTimer, Ray6Cool, 13000
+		return
+	}
+return
+
+~RButton::
+	SetTimer, RayAdvance, 1000
+return
+
+; Rays, switch and autofire on release (no charge so people can't hear it coming)
+~RButton Up::
+	SetTimer, RayAdvance, Off
+	if (justrayed = 1)
+	{
+		;SelectBarSlotReturn(4,2,1)
+		;Sleep,50
+		;Send {LButton}
+		return
+	}
+	justrayed = 1
+	SetTimer, RayCool, 1300
+	
+	pulloutStaff()
+
+	;TTS(Voice, "Speak", "Ray")
+
+	if (r1 = 0)
+	{
+		SelectBarSlot(0,8)
+		Sleep, 60
+		SendInput {LButton}
+		r1=1
+		SetTimer, Ray1Cool, 16000
+		SelectBarSlotReturn(4,2,0)
+		Goto, ResetSkips
+		return
+	}
+	if (r2 = 0)
+	{
+		SelectBarSlot(5,5)
+		Sleep, 60
+		SendInput {LButton}
+		r2=1
+		SetTimer, Ray2Cool, 6000
+		SelectBarSlotReturn(4,2,0)
+		Goto, ResetSkips
+		return
+	}
+	if (r3 = 0)
+	{
+		SelectBarSlot(6,1)
+		Sleep, 60
+		SendInput {LButton}
+		r3=1
+		SetTimer, Ray3Cool, 9000
+		SelectBarSlotReturn(4,2,0)
+		Goto, ResetSkips
+		return
+	}
+	if (r4 = 0)
+	{
+		SelectBarSlot(7,5)
+		Sleep, 60
+		SendInput {LButton}
+		r4=1
+		SetTimer, Ray4Cool, 14000
+		SelectBarSlotReturn(4,2,0)
+		Goto, ResetSkips
+		return
+	}
+	if (r5 = 0)
+	{
+		SelectBarSlot(7,2)
+		Sleep, 60
+		SendInput {LButton}
+		r5=1
+		SetTimer, Ray5Cool, 14000
+		SelectBarSlotReturn(4,2,0)
+		Goto, ResetSkips
+		return
+	}
+	if (r6 = 0)
+	{
+		SelectBarSlot(7,4)
+		Sleep, 60
+		SendInput {LButton}
+		r6=1
+		SetTimer, Ray6Cool, 13000
+		SelectBarSlotReturn(4,2,0)
+		Goto, ResetSkips
+		return
+	}
+
+	SelectBarSlotReturn(4,7,0)
+	Sleep, 60
+	SendInput {LButton}
+	SelectBarSlotReturn(4,2,0)
+	
+	Goto, ResetSkips
+
+return
+
+ResetSkips:
+	if (skippedray = 0)
+	{
+		return
+	}
+	if (skipray1 = 1)
+	{
+		;TTS(Voice, "Speak", "Reset 1")
+		skipray1 = 0
+		r1 = 0
+		return
+	}
+	if (skipray2 = 1)
+	{
+		;TTS(Voice, "Speak", "Reset 2")
+		skipray2 = 0
+		r2 = 0
+	}
+	if (skipray3 = 1)
+	{
+		;TTS(Voice, "Speak", "Reset 3")
+		skipray3 = 0
+		r3 = 0
+	}
+	if (skipray4 = 1)
+	{
+		;TTS(Voice, "Speak", "Reset 4")
+		skipray4 = 0
+		r4 = 0
+	}
+	if (skipray5 = 1)
+	{
+		;TTS(Voice, "Speak", "Reset 5")
+		skipray5 = 0
+		r5 = 0
+	}
+	if (skipray6 = 1)
+	{
+		;TTS(Voice, "Speak", "Reset 6")
+		skipray6 = 0
+		r6 = 0
+	}
+return
+
+; Stormblast / Ice Storm7
+~NumpadEnter::
+	if (keyDownLength15 = 0)
+	{
+	keyDownLength15 := a_tickCount
+	}
+	;SendInput {E Down}
+return
+
+
+~NumpadEnter Up::
+;~RButton Up::!2&3!
+;	GetKeyState, state, E
+	;TTS(Voice, "Speak", "Ray")
+;	SendInput {E Up}
+
+		if a_tickCount - keyDownLength15 > longDelayTime
+		{
+			SelectBarSlotReturn(9,1,0)
+		} else {
+			If (a_tickCount-doubleClickActionTime4 < dcDelayTime)
+			{
+				
+				SelectBarSlotReturn(0,5,0)
+				SetTimer,ConfusionCoolDownTimer, 63000
+			} else {
+				;SendInput {E Up}
+				
+				;DllCall("mouse_event", uint, 1, int, 0, int, 1200)
+				SelectBarSlotReturn(7,9,0)
+				SetTimer,StormblastCoolDownTimer, 60000
+			}
+		}
+
+	doubleClickActionTime4 := a_tickCount
+	keyDownLength15 := 0
+
+	
+return
+
+; Debuff current Build
+~`::
+		if (build = 0)
+		{
+			SelectBarSlotReturn(5,3,0)
+		return
+		}
+		if (build = 1)
+		{
+			SelectBarSlotReturn(6,0,0)
+
+		return
+		}
+		if (build = 2)
+		{
+			SelectBarSlotReturn(3,0,0)
+		return
+		}
+		if (build = 3)
+		{
+			SelectBarSlotReturn(5,0,0)
+		return
+		}
+		if (build = 4)
+		{
+			SelectBarSlotReturn(7,6,0)
+		return
+		}
+return
+
+WheelUp::
+		if (wheelDowned == 1) return
+
+		wheelDowned = 1
+		activeSlot := activeSlot - 1
+
+		if (activeBar == 8)
+		{
+			if (activeSlot < 0)
+			{
+				activeSlot := 9		
+			}
+		}
+		if (activeBar == 2)
+		{
+			if (activeSlot < 0)
+			{
+				activeSlot = 9
+			}
+		}
+
+		SelectBarSlotReturn(activeBar,activeSlot,activeBar)
+		Sleep, 100
+		wheelDowned = 0
+return
+
+WheelDown::
+		if (wheelDowned == 1) return
+
+		wheelDowned = 1
+		activeSlot := activeSlot + 1
+
+		if (activeBar == 8)
+		{
+			if (activeSlot > 9)
+			{
+				activeSlot := 0		
+			}
+		}
+
+		if (activeBar == 2)
+		{
+			if (activeSlot > 9)
+			{
+				activeSlot = 0
+			}
+		}
+
+		SelectBarSlotReturn(activeBar,activeSlot,activeBar)
+		Sleep, 100
+		wheelDowned = 0
+	
+return
+
+DebuffCycleTimer:
+	SetTimer, DebuffCycleTimer, Off
+	debuffctrl = 0
+	;SoundPlay, C:\Users\brad\Documents\macrosounds\s_whirlwind.wav
+return
+
+; Vamp touch and Toungue rot and long press slash debuff
+~RCtrl::
+	if (keyDownLength = 0)
+	{
+		keyDownLength := a_tickCount
+	}
+return
+
+~RCtrl Up::
+	SelectBarSlotReturn(5,4,0)
+	;SetTimer, SwitchTimer, Off
+	if a_tickCount - keyDownLength > longDelayTime
+	{
+		
+		SelectBarSlotReturn(9,4,0)
+	} else
+	If (a_tickCount-doubleClickActionTime5 < dcDelayTime)
+	{
+		
+		SelectBarSlotReturn(0,9,0)
+	} else {
+		
+		if debuffctrl = 2
+		{
+			SelectBarSlotReturn(4,8,0)
+			debuffctrl = 0
+		} else
+		if debuffctrl = 1
+		{
+			SelectBarSlotReturn(5,2,0)
+			debuffctrl = 2
+		} else {
+			SelectBarSlotReturn(4,0,0)
+			SetTimer, DebuffCycleTimer, 10000
+			debuffctrl = 1
+		}		
+	}
+	doubleClickActionTime5 := a_tickCount
+	keyDownLength := 0	
+return
+
+Blizzard:
+	SetTimer, Blizzard, Off
+	;SoundPlay, C:\Users\brad\Documents\macrosounds\s_uup.wav
+	;r90s := 0
+return
+
+UnholyFlames:
+	SetTimer, UnholyFlames, Off
+	;SoundPlay, C:\Users\brad\Documents\macrosounds\s_uup.wav
+	;r90s := 0
+return
+
+Inferno:
+	SetTimer, Inferno, Off
+	;SoundPlay, C:\Users\brad\Documents\macrosounds\s_fup.wav
+return
+
+ResetR50Cycle:
+	r50Cycle = 0
+	SetTimer, ResetR50Cycle, Off
+return
+
+NinetyCool:
+	SetTimer, NinetyCool, Off
+	r90s = 0
+	TTS(Voice, "Speak", "Ninety")
+return
+
+; Power attack & Fireball & Stamina Leech
+~NumpadHome::
+	if (keyDownLength4 = 0)
+	{
+	keyDownLength4 := a_tickCount
+	}
+	phk2 = %A_PriorHotkey%
+	sc2 = %A_TimeSincePriorHotkey%
+return
+~NumpadHome Up::
+	GetKeyState, state, E
+		
+	if state = D
+	{
+		SendInput {E Up}
+		Sleep, 150
+	}
+	
+	if (phk2 = "~NumpadPgUp Up")
+	{
+		if (sc2 < 550)
+		{
+			TTS(Voice, "Speak", "Switch")
+			Sleep 550-sc2
+		}
+	}
+	shieldout = 0
+	spikesout = 0
+	;stafftoshield = %a_tickCount%
+	
+	if (staffinuse = 0)
+	{
+		SelectBarSlotReturn(1,2,0)
+	} else {
+		SelectBarSlotReturn(9,0,0)
+	}
+	;if ((staff = 0) || (stafftype = 1))
+	;{
+;		pulloutStaff()
+;		keyDownLength4 = a_tickCount
+;	} else {
+;		pulloutStaff()
+;	}
+	if (staffout = 0)
+	{
+		Sleep, 250
+		keyDownLength4 = a_tickCount
+		TTS(Voice, "Speak", "Staff")
+		staffout = 1
+		stafftype = 0
+	}
+	
+	;if (stafftype = 1)
+	;{
+	;	Sleep, 200
+	;	keyDownLength4 = a_tickCount
+	;	TTS(Voice, "Speak", "Staff")
+	;	staffout = 1
+	;	stafftype = 0
+	;}
+
+	
+	if a_tickCount - keyDownLength4 > longDelayTime
+	{
+		SelectBarSlotReturn(4,2,0)
+	} else
+ 	If (a_tickCount-doubleClickActionTime100 < dcDelayTime)
+	{
+		SelectBarSlotReturn(0,7,0)
+	} else
+	{
+		if (r90s = 0)
+		{
+			SelectBarSlotReturn(7,1,0)
+			r90s = 1
+		} else
+		if (r90s = 1)
+		{
+			SelectBarSlotReturn(9,9,0)
+			r90s = 0
+		}
+	}
+	doubleClickActionTime100 := a_tickCount
+	keyDownLength4 := 0
+return
+
+
+; SUPER KEY
+~Down::
+;	if (superActionLongTime = 0)
+;	{
+	superActionLongTime := a_tickCount
+;	}
+return
+
+~Down Up::
+	if (staffout = 0)
+	{
+		SelectBarSlotReturn(6,9,0)
+		SelectBarSlotReturn(9,2,0)
+		Sleep, 50
+		SendInput {LButton}
+		return
+	}
+	If a_tickCount - superActionLongTime > longDelayTime
+	{
+		
+		; Stamina Leech
+		SelectBarSlotReturn(6,2,0)
+		superActionLongTime := 0
+	} else
+	If ((a_tickCount-superActionTime < dcDelayTime) && (!superActionDoubleClicked))
+	{
+		TTS(Voice, "Speak", "Debuff")
+;		SoundPlay, C:\Users\brad\Documents\macrosounds\s_debuff.wav
+		if (build = 0)
+		{
+			SelectBarSlotReturn(5,3,0)
+			return
+		}
+		if (build = 1)
+		{
+			SelectBarSlotReturn(6,0,0)
+			return
+		}
+		if (build = 2)
+		{
+			SelectBarSlotReturn(3,0,0)
+			return
+		}
+		if (build = 3)
+		{
+			SelectBarSlotReturn(5,0,0)
+			return
+		}
+		if (build = 4)
+		{
+			SelectBarSlotReturn(7,6,0)
+			return
+		}
+		if (build = 5)
+		{
+			SelectBarSlotReturn(6,4,0)
+			return
+		}
+		if (build = 6)
+		{
+			SelectBarSlotReturn(3,0,0)
+			return
+		}
+		
+		superActionDoubleClicked = 1
+
+	} else {
+		
+		;SoundPlay, C:\Users\brad\Documents\macrosounds\s_bolt.wav
+		
+		if (build = 0)
+		{
+			SelectBarSlotReturn(4,2,0)
+		}
+		if (build = 1)
+		{
+			SelectBarSlotReturn(6,5,0)
+		}
+		if (build = 2)
+		{
+			SelectBarSlotReturn(0,3,0)
+		}
+		if (build = 3)
+		{
+			SelectBarSlotReturn(6,6,0)
+		}
+		if (build = 4)
+		{
+			SelectBarSlotReturn(6,7,0)
+		}
+		if (build = 5)
+		{
+			SelectBarSlotReturn(2,0,0)
+		}
+		if (build = 6)
+		{
+;			SelectBarSlotReturn(4,4,0)
+				if (r50Cycle = 2)
+				{
+					r50Cycle = 0
+				}
+				if (r50Cycle = 1)
+				{
+					
+					SelectBarSlotReturn(4,9,0)
+					r50Cycle = 2
+				}
+				if (r50Cycle = 0)
+				{
+					
+					SelectBarSlotReturn(4,4,0)
+					r50Cycle = 1
+					SetTimer, ResetR50Cycle, 4000
+				}
+
+		}
+		superActionDoubleClicked = 0
+	}
+	superActionTime := a_tickCount
+	superActionLongTime := 0
+return
+
+
+StickNMove:
+	if StickAndMove = 0 return
+
+	SendInput {NumpadEnd up}
+	SendInput {NumpadPgDn up}
+	SendInput {NumpadIns up}
+	SendInput {Numpad5 up}
+	
+	SetTimer, StickNMove, Off
+	Random, stick, 300,400
+	Random, dir, 1,100
+	
+	if (dir < 50)
+	{
+		SendInput {NumpadEnd down}
+		SendInput {NumpadIns down}
+	} else {
+		SendInput {NumpadPgDn down}
+		SendInput {Numpad5 down}
+	}
+
+	SetTimer, StickNMove, %stick%
+	Sleep, stick
+return
+
+~NumpadSub::
+	if (keyDownLengthStaff = 0)
+	{
+		keyDownLengthStaff := a_tickCount
+	}
+return
+
+~NumpadSub Up::
+	state := GetKeyPressType(keyDownLengthStaff, sdClickActionTime)
+
+	if ((state = _SINGLETAP) || (state = _DOUBLETAP))
+	{
+		if (staffinuse = 0)
+		{
+			staffinuse = 1
+			SelectBarSlotReturn(9,0,0)
+			TTS(Voice, "Speak", "Backup Staff")
+		} else {
+			staffinuse = 0
+			SelectBarSlotReturn(1,2,0)
+			TTS(Voice, "Speak", "Mayne Staff")
+		}
+	}
+	if (state = _LONGPRESS) 
+	{
+		staffinuse = 2
+		SelectBarSlotReturn(6,8,0)
+		TTS(Voice, "Speak", "Buff Staff")
+		
+	}
+
+;	if (StickAndMove = 0)
+;	{
+;		SendInput {NumpadIns down}
+;		Sleep, 2000
+;		SendInput {NumpadIns up}
+;		;SetTimer, StickNMoveUD, 1
+;		SetTimer, StickNMove, 1
+;		StickAndMove = 1
+;	} else {
+;		StickAndMove = 0
+;		;SetTimer, StickNMoveUD, Off
+;		SetTimer, StickNMove, Off
+;	}
+	sdClickActionTime = a_tickCount
+	keyDownLengthStaff = 0
+return
+
+;; ---------- UNIVERSAL LOOT ON KEY PRESS/HOLD ----------------
+~NumLock::
+   {	
+      MouseGetPos, xpos, ypos
+      SendInput {LButton Down}
+	  if (xpos > 1500)
+	  {
+		MouseMove, 894, 758, 0
+	  } else {
+		MouseMove, 1656, 759, 0
+	  }
+      SendInput {LButton Up}
+      MouseMove, %xpos%, %ypos%, 0
+	  Sleep, 100
+   }
+return
+
+~NumLock Up::
+
+return
+
+;; ------------ C - CROUCH / TOGGLE CROUCH -----------------
+/*
+autocrouch = 0
+crouched = 0
+
+HoldCrouch:
+	TTS(Voice, "Speak", "Hold")
+	SetTimer, HoldCrouch, Off
+	SendInput {NumpadIns}        ;; TOGGLE AUTOCROUCH OFF
+	SendInput {N Down}   ;; CROUCH
+	crouched = 1
+return
+
+
+*~M::
+	if (autocrouched = 0)
+	{
+		autocrouched = 1
+		SetTimer, HoldCrouch, 150
+		SendInput {NumpadIns}        ;; TOGGLE AUTOCROUCH ON
+	}
+return
+
+*~M Up::
+	SetTimer, HoldCrouch, Off
+	if crouched = 1
+	{
+		Send {N Up}
+	}
+	crouched = 0
+	autocrouched = 0
+return
+*/
+
+
+$ScrollLock::
+	Suspend
+	if (stopall = 1)
+	{
+		stopall = 0
+	} else {
+		stopall = 1
+	}
+return

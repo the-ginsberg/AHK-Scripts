@@ -1,0 +1,105 @@
+MOVEMENT:
+lean right: alt+numpad1
+lean left: alt+numpad2
+
+INTERACTION:
+alt use: h
+parry: right click
+rest: \
+unsheath object: ]
+use: g
+
+GUI:
+GUI toggle: ESCAPE
+Bars: ALT+number
+
+Set Column 1:
+1 - Whirlwind
+2 - Powerattack
+3 - Rage
+4 - Disabling blow
+5 - Disabling shot
+
+
+Set Column 1 binds:
+1 - ctrl+numpad4
+2 - ctrl+numpad9
+3 - alt+ctrl+numpad3
+4 - alt+ctrl+numpad5
+5 - alt+ctrl+numpad6
+
+Set Column 2:
+1 - Staff: alt+numpad3
+2 - 2H: alt+numpad4
+3 - Bow: alt+numpad5
+4 - 1H: alt+numpad6
+5 - Shield: alt+numpad7
+
+Set Column 2 binds:
+1 - alt+numpad3
+2 - alt+numpad4
+3 - alt+numpad5
+4 - alt+numpad6
+5 - alt+numpad7
+
+Set Column 8:
+Health to Mana
+Mana to Stam
+Witches Brew
+Stamina To health
+Heal Self
+Sacrifice
+Heal Other
+Begone
+Shrapnel
+Stormblast
+
+Set Col 8 binds (start at 0):
+0 - alt+ctrl+numpad9
+1 - alt+numpad9
+2 - alt+numpad8
+3 - ctrl+numpad1
+4 - ctrl+numpad2
+5 - ctrl+numpad3
+6 - alt+ctrl+numpad1
+7 - alt+ctrl+numpad2
+8 - begone: alt+ctrl+numpad7
+9 - alt+ctrl+numpad8
+
+Set Column 9:
+Impale
+Dragons Breath
+Unholy Caress
+Frostbite
+Lightning Bolt
+Insect Swarm
+Fireball
+Inferno
+
+Set Col9 Binds (start at 0):
+0 - z
+1- CTRL+Numpad5 
+2 - CTRL+Numpad6
+3 - CTRL+Numpad7
+4 - CTRL+Numpad8
+5 - CTRL+ALT+i
+6 - CTRL+ALT+o
+7 - ctrl+numpadsub
+8 - ctrl+numpadadd
+9 - alt+ctrl+numpad4
+
+Set Column 10:
+1 - Food
+2 - Skinner
+3 - Health Pot
+4 - Stam Pot
+5 - Mount
+6 - Alt Mount
+
+Set Column 10 Binds:
+1 - ctrl+f
+2 - ctrl+t
+3 - ctrl+g
+4 - ctrl+h
+5 - ctrl+r
+6 - ctrl+shift+r

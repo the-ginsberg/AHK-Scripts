@@ -1,0 +1,62 @@
+; script only runs when Darkfall is open
+#If WinActive("Darkfall Online")
+
+
+; Toggle Script on Off
+f12:: ; On off switch for Script on F12 key
+Pause
+Suspend
+return
+
+
+; Sword and Board on Single Click
+!~*wheeldown:: ; s&b on alt scroll wheel down
+ Send !{Numpad6} ; sword bind
+ Sleep 600
+ Send !{Numpad7} ; board bind
+ Sleep 100
+ Send +1  ; return to Hotbar 1
+return
+
+
+; Staff and Magic Hotbar
+!~*wheelup:: ; staff on alt scroll wheel up
+ Send !{Numpad5} ; staff bind
+ Sleep 100
+ Send +2  ; return to Hotbar 2
+return
+
+
+; 2Hander and Melee Hotbar
++~*wheelup:: ; 2hander on shift scroll wheel up
+ Send !{Numpad5} ; staff bind
+ Sleep 100
+ Send +1  ; return to Hotbar 2
+return
+
+
+; Mount Lean, spells, and Melee on your Q/E Keys
+*e::
+ Send !{Numpad1} ; Lean Right
+ Send ^{Numpad4} ; Whirlwind
+ 
+ *q::
+ Send !{Numpad1} ; Lean Left
+ Send ^{Numpad4} ; Knock Back
+
+ 
+ ; SPRINT TOGGLE
+ [::
+ Loop
+    {
+        If A_Index = 1
+            Sleep, 500
+        GetKeyState, State, NumpadAdd, P
+        If State = D
+            Break
+        Send {] Down}
+    }
+Send {] Up}
+Sleep, 500
+Return
+ 
