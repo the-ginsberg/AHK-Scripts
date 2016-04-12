@@ -1,19 +1,6 @@
-; ******************* script only runs when Darkfall is open *******************
 #If WinActive("Darkfall Online")
-#NoEnv
-; *********************************************************
-
-
-
-
-; ******************* Toggle Script on Off *******************
-*Pause::Suspend
-; *********************************************************
-
-
-
-
-; ******************* Ray Setup *******************
+; USE CTRL+NUM to change hotbars
+; ALT (!), CTRL (^) and SHIFT (+)
 
 
 healCount := 0
@@ -50,14 +37,16 @@ While A_Index <= num_rays
 r_%A_Index% = 1
 }
 
+;~*Alt::NumPadDiv
+
 
 
 *e::
  fCount = 0
  vCount = 0
- Send !{Numpad4} ; Alt + Numpad#4
- Send ^{Numpad4} ; CTRL + Numpad#4
- Send ^{Numpad5} ; CTRL + Numpad#5
+ Send !{Numpad1} ; Lean Right
+ Send ^{Numpad4} ; Whirlwind
+ Send !{Numpad4} ;
 
  cur_ray := RayLogic(cur_ray, cur_key, cur_cool)
  Send , %cur_key%
@@ -72,14 +61,26 @@ r_%A_Index% = 1
  SetTimer , %cur_ray% , %neg_cur_cool%
 return
 
+*q::
+ fCount = 0
+ vCount = 0
+ Send ^{Numpad5} ; CTRL + Numpad#5
+ Send ^{Numpad2} ; CTRL + Numpad#2
+ Send !{NumpadAdd} ; 
+ Send !{Numpad3} ;
+return
 
 
 
+F10:: ;Set Dropoff Spot
+ MouseGetPos, DropX, DropY
+return
 
-
-
-
-
+^!LButton:: ;Loot
+ MouseGetPos, OldX, OldY
+ MouseClickDrag, L, OldX, OldY, DropX, DropY, 0
+ MouseMove, OldX, OldY, 0
+return
 
 
 ;Subroutine group to reset ray cds
@@ -112,9 +113,43 @@ RayLogic(cur_ray, ByRef cur_key, ByRef cur_cool)
 
 
 
+; ******************* SPRINT TOGGLE *******************
+~pgup::
+sendinput {F8 down}
+return
+
+
+~pgdn::
+sendinput {F8 up}
+return
 ; *********************************************************
 
+; ******************* Auto Cast Transfers *******************
+*Xbutton1::
+ Send ^{Numpad9} ; stam to health
+ sleep 10
+ Click
+return
 
+*Xbutton2::
+ Send ^{Numpad8} ; Manm to Stam
+ sleep 10
+ Click
+return
+
+*Mbutton::
+ Send ^{Numpad7} ; health to Mana
+ sleep 10
+ Click
+return
+; ***********************************************************
+
+; ******************* 2 different skills on ` key *******************
+`::
+ Send ^{Numpad1} ; CTRL + Numpad#1
+ Send ^{Numpad0} ; CTRL + Numpad#0
+return
+; *********************************************************
 
 
 
@@ -164,73 +199,5 @@ return
 
 
 
-; ******************* Mount Lean, spells, and Melee on your Q/E Keys *******************
-
-
-
-
-
-
-
-
-
-
- 
-*q::
- Send !{Numpad3} ; Alt + Numpad#3
- Send ^{Numpad2} ; CTRL + Numpad#2
-return
-; *********************************************************
-
-
-
-
-; ******************* 2 different skills on ` key *******************
-`::
- Send ^{Numpad1} ; CTRL + Numpad#1
- Send ^{Numpad0} ; CTRL + Numpad#0
-return
-; *********************************************************
-
-
- 
- 
-; ******************* SPRINT TOGGLE *******************
-[::
- Loop
-    {
-        If A_Index = 1
-            Sleep, 500
-        GetKeyState, State, [, P
-        If State = D
-            Break
-        Send {] Down}
-    }
-Send {] Up}
-Sleep, 500
-Return
-; *********************************************************
-
-
-
-
-; ******************* Auto Cast Transfers *******************
-*Xbutton1::
- Send ^{Numpad9} ; stam to health
- sleep 10
- Click
-return
-
-*Xbutton2::
- Send ^{Numpad8} ; Manm to Stam
- sleep 10
- Click
-return
-
-*Mbutton::
- Send ^{Numpad7} ; health to Mana
- sleep 10
- Click
-return
-; ***********************************************************
+*Pause::Suspend
 

@@ -13,12 +13,12 @@ vCount := 0
 fCount := 0
 
 num_rays = 6
-k_1 = ^{Numpad5} ;Impale
-k_2 = ^{Numpad6} ;Dragons Breath
-k_3 = ^{Numpad7} ;Unholy Caress
-k_4 = ^{Numpad8} ;Frostbite
-k_5 = !^i ;Lightning Bolt
-k_6 = !^o ;Insect Swarm
+k_1 = {Numpad5} ;Impale
+k_2 = {Numpad4} ;Dragons Breath
+k_3 = {Numpad3} ;Unholy Caress
+k_4 = {Numpad2} ;Frostbite
+k_5 = {Numpad1} ;Lightning Bolt
+k_6 = {Numpad0} ;Insect Swarm
 
 ;Tweak cooldowns here
 cd_1 = 6500 ;Impale

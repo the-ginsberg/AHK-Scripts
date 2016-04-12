@@ -1,0 +1,93 @@
+; ******************* script only runs when Darkfall is open *******************
+#If WinActive("Darkfall Online")
+#NoEnv
+; *********************************************************
+
+
+Ray = True
+RayOne = True
+RayTwo = True
+RayThree = True
+RayFour = True
+RayFive = True
+RaySix = True
+
+RayTimer:
+    Ray = True
+    return
+
+RayOneTimer:
+    RayOne = True
+    return
+
+RayTwoTimer:
+    RayTwo = True
+    return
+
+RayThreeTimer:
+    RayThree = True
+    return
+
+RayFourTimer:
+    RayFour = True
+    return
+
+RayFiveTimer:
+    RayFive = True
+    return
+
+RaySixTimer:
+    RaySix = True
+    return
+
+;Ray script
+E::
+ Send !{Numpad4} ; Alt + Numpad#4
+ Send ^{Numpad4} ; CTRL + Numpad#4
+ Send ^{Numpad5} ; CTRL + Numpad#5
+    if Ray = True
+	{
+	Ray = False
+	SetTimer, RayTimer, -1300  ;Global CD
+        if RayOne = True
+	    {
+	    RayOne = False
+	    Send {Numpad3}
+	    SetTimer, RayOneTimer, -9000  ;Frostbite
+	    }
+    	else if RayTwo = True
+	    {
+	    RayTwo = False
+	    Send {Numpad4}
+	    SetTimer, RayTwoTimer, -6000  ;Impale
+	    }
+    	else if RayThree = True
+	    {
+	    RayThree = False
+	    Send {Numpad5}
+	    SetTimer, RayThreeTimer, -14000  ;Dragonbreath
+	    }
+    	else if RayFour = True
+	    {
+	    RayFour = False
+	    Send {Numpad1}
+	    SetTimer, RayFourTimer, -14000  ;Unholy Caress
+	    }
+    	else if RayFive = True
+	    {
+	    RayFive = False
+	    Send {Numpad2}
+	    SetTimer, RayFiveTimer, -13000  ;Insect Swarm
+	    }
+    	else if RaySix = True
+	    {
+	    RaySix = False
+	    Send {Numpad0}
+	    SetTimer, RaySixTimer, -8000   ;Lightning Bolt
+	    }
+	else
+	    {
+	    return
+	    }
+	}
+    return
