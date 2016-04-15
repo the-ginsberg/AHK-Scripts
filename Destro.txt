@@ -1,0 +1,198 @@
+#If WinActive("Darkfall Online")
+; USE CTRL+NUM to change hotbars
+; ALT (!), CTRL (^) and SHIFT (+)
+
+
+healCount := 0
+cCount := 0
+xbCount := 0
+vCount := 0
+fCount := 0
+
+num_rays = 6
+k_1 = ^{Numpad3} ;Impale
+k_2 = ^{Numpad4} ;Dragons Breath
+k_3 = ^{Numpad5} ;Unholy Caress
+k_4 = ^{Numpad6} ;Frostbite
+k_5 = ^{Numpad7} ;Lightning Bolt
+k_6 = ^{Numpad8} ;Insect Swarm
+
+;Tweak cooldowns here
+cd_1 = 5000 ;Impale
+cd_2 = 5000 ;Dragons Breath
+cd_3 = 5000 ;Unholy Caress
+cd_4 = 5000 ;Frostbite
+cd_5 = 5000 ;Lightning Bolt
+cd_6 = 5000 ;Insect Swarm
+
+p_1 = 1 ;Impale
+p_2 = 2 ;Dragons Breath
+p_3 = 3 ;Unholy Caress
+p_4 = 4 ;Frosbite
+p_5 = 5 ;Lighting Bolt
+p_6 = 6 ;Insect Swarm
+
+While A_Index <= num_rays
+{
+r_%A_Index% = 1
+}
+
+;~*Alt::NumPadDiv
+
+
+
+e::
+ fCount = 0
+ vCount = 0
+ Send +{Numpad8} ; 
+ Send +{Numpad3} ; 
+ Send !{Numpad8} ;
+
+ cur_ray := RayLogic(cur_ray, cur_key, cur_cool)
+ Send , %cur_key%
+ While (ErrorLevel = 1)
+ {
+ If (GetKeyState("e", "P") = 1)
+ Return
+ KeyWait, Lbutton, T.2
+ }
+ r_%cur_ray% = 0
+ neg_cur_cool := -cur_cool
+ SetTimer , %cur_ray% , %neg_cur_cool%
+return
+
+q::
+ fCount = 0
+ vCount = 0
+ Send +{Numpad5} ;
+ Send +{Numpad6} ; 
+ Send +{Numpad0} ; 
+ Send !{Numpad7} ;
+ Send ^{Numpad0} ; Bitches Brew
+return
+
++q::
+ Send ^{NumpadAdd} ; 2 Hander
+ Sleep 100
+ Send +1  ; return to Hotbar 1
+return
+
++e::
+ Send ^{NumpadSub} ; Bow
+ Sleep 100
+ Send +1  ; return to Hotbar 1
+return
+
+
+F10:: ;Set Dropoff Spot
+ MouseGetPos, DropX, DropY
+return
+
+^!LButton:: ;Loot
+ MouseGetPos, OldX, OldY
+ MouseClickDrag, L, OldX, OldY, DropX, DropY, 0
+ MouseMove, OldX, OldY, 0
+return
+
+
+;Subroutine group to reset ray cds
+1:
+2:
+3:
+4:
+5:
+6:
+r_%A_ThisLabel% = 1
+Return
+
+RayLogic(cur_ray, ByRef cur_key, ByRef cur_cool)
+{
+ global
+ cur_ray := p_1
+ While A_Index <= num_rays {
+ ray_number := p_%A_Index%
+ if (r_%ray_number% = 1) {
+ cur_ray := ray_number
+ Break
+ }
+ }
+
+ ;Sets the ray's corresponding key and cooldown
+ cur_key := k_%cur_ray%
+ cur_cool := cd_%cur_ray%
+ Return cur_ray
+}
+
+c::
+ Send +{Numpad4} ; Power Attack
+ Send +{Numpad9} ; Power Attack
+ Send !{Numpad6} ; Confuse
+return
+
+*Xbutton1::
+ Send !{Numpad2} ; stam to health
+ sleep 10
+ Click
+return
+
++Xbutton1::
+ Send !{NumpadDiv} ; staff
+ Sleep 100
+ Send +3  ; return to Hotbar 3
+return
+
+*Xbutton2::
+ Send !{Numpad3} ; Manm to Stam
+ sleep 10
+ Click
+return
+
++Xbutton2::
+ Send !{Numpad1} ; health to Mana
+ sleep 10
+ Click
+return
+
+*Mbutton::
+ Send ^{Numpad1} ; Rage
+ Send ^{Numpad9} ; Unburden
+return
+
+Tab::
+ Send !{Numpad5} ;
+ Send +{Numpad1} ; Disable
+ Send +{Numpad2} ; Disable
+ Send +{Numpad7} ; Disable
+return
+
+*`::
+ Send ^{Numpad2} ; Heal Self
+ Send !{Numpad4} ; shrapnel
+return
+
+*v:: ; s&b
+ Send !{NumpadAdd} ; sword bind
+ Sleep 600
+ Send !{NumpadSub} ; board bind
+ Sleep 100
+ Send +1  ; return to Hotbar 1
+return
+
+F1:: ; Daggers
+ Send !{NumpadMult} ;
+ Sleep 100
+ Send +1  ; return to Hotbar 1
+return
+
+; ******************* SPRINT TOGGLE *******************
+*t::
+sendinput {F8 down}
+return
+
+
++t::
+sendinput {F8 up}
+return
+; *********************************************************
+
+*Pause::Suspend

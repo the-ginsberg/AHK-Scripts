@@ -1,0 +1,28 @@
+#If WinActive("Darkfall Online")
+
+loop {
+ Send 1
+ sleep 250
+ Send !{Numpad4} 
+ sleep 250
+ Send !{Numpad2} 
+ sleep 30
+ Click
+ sleep 3000
+ Send 2
+ sleep 250
+ Send !{Numpad4} 
+ sleep 250
+ Send !{Numpad3} 
+ sleep 30
+ Click
+ sleep 3000
+ Send 3
+ sleep 250
+ Send !{Numpad4} 
+ sleep 250
+ Send !{Numpad1} 
+ sleep 30
+ Click
+ sleep 3000
+}
